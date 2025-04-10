@@ -108,4 +108,40 @@ async function getVideoStream(url) {
 /**
  * Clean TikTok URL by removing tracking parameters
  * @param {string} url - TikTok URL
- * @returns {string}
+ * @returns {string} Cleaned URL
+ */
+function cleanTikTokUrl(url) {
+  try {
+    const urlObj = new URL(url);
+    
+    // Keep only essential path and remove query parameters
+    // Format should be like https://www.tiktok.com/@username/video/1234567890
+    const pathParts = urlObj.pathname.split('/');
+    let cleanPath = '';
+    
+    // Check if the URL contains a username and video ID
+    if (pathParts.includes('video')) {
+      const usernameIndex = pathParts.findIndex(part => part.startsWith('@'));
+      const videoIndex = pathParts.indexOf('video');
+      
+      if (usernameIndex !== -1 && videoIndex !== -1 && videoIndex + 1 < pathParts.length) {
+        cleanPath = `/${pathParts[usernameIndex]}/video/${pathParts[videoIndex + 1]}`;
+      } else {
+        cleanPath = urlObj.pathname; // Keep original path if pattern not found
+      }
+    } else {
+      cleanPath = urlObj.pathname; // Keep original path
+    }
+    
+    // Construct clean URL with only essential parts
+    return `${urlObj.protocol}//${urlObj.host}${cleanPath}`;
+  } catch (error) {
+    console.error('Error cleaning TikTok URL:', error);
+    return url; // Return original URL if cleaning fails
+  }
+}
+
+module.exports = {
+  extractInfo,
+  getVideoStream
+};
