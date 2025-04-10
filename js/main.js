@@ -18,11 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const videoPlatform = document.getElementById('video-platform');
     const videoDuration = document.getElementById('video-duration');
 
-    // API URL - Update with your Render.com URL in production
-    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-        ? 'http://localhost:3000/api' 
-        : '/api';
-
     // Handle form submission
     downloadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -38,8 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Disable form while processing
             setFormEnabled(false);
             
-            // Call API to extract video info
-            const videoInfo = await extractVideo(videoUrl);
+            // Extract video info client-side (simplified for demo)
+            const videoInfo = await clientSideExtractVideo(videoUrl);
             
             // Update UI with video info
             updateVideoInfo(videoInfo);
@@ -59,39 +54,80 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle download button click
-    downloadBtn.addEventListener('click', async () => {
-        const videoUrl = videoUrlInput.value.trim();
-        if (!videoUrl) return;
-        
+    // Client-side video extraction (basic version for GitHub Pages demo)
+    async function clientSideExtractVideo(url) {
+        // Basic URL validation
         try {
-            // Start download
-            window.location.href = `${API_BASE_URL}/download?url=${encodeURIComponent(videoUrl)}`;
+            new URL(url);
         } catch (error) {
-            console.error('Download error:', error);
-            errorDetails.textContent = 'Download failed. Please try again.';
+            throw new Error('Invalid URL format');
+        }
+
+        // Determine which platform the URL belongs to
+        let platform = 'unknown';
+        let title = 'Video';
+        let thumbnail = '';
+        let duration = null;
+        
+        // YouTube
+        if (url.includes('youtube.com') || url.includes('youtu.be')) {
+            platform = 'youtube';
             
-            hideAllSections();
-            showSection(errorSection);
+            // Extract video ID
+            let videoId = '';
+            if (url.includes('youtube.com/watch')) {
+                const urlObj = new URL(url);
+                videoId = urlObj.searchParams.get('v') || '';
+            } else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1]?.split(/[?#]/)[0] || '';
+            }
+            
+            if (!videoId) {
+                throw new Error('Could not extract YouTube video ID');
+            }
+            
+            // Set thumbnail from video ID
+            thumbnail = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+            title = 'YouTube Video: ' + videoId;
+            
+            // Set download link to original YouTube
+            downloadBtn.href = url;
+        } 
+        // TikTok
+        else if (url.includes('tiktok.com')) {
+            platform = 'tiktok';
+            title = 'TikTok Video';
+            thumbnail = 'https://sf16-scmcdn-sg.ibytedtos.com/goofy/tiktok/falcon/falcon/webapp/main/webapp-static/image/tiktok-logo-dark.1e8e3a0c.png';
+            downloadBtn.href = url;
+        } 
+        // Twitter/X
+        else if (url.includes('twitter.com') || url.includes('x.com')) {
+            platform = 'twitter';
+            title = 'Twitter Video';
+            thumbnail = 'https://abs.twimg.com/responsive-web/client-web/icon-default.ee392b40.png';
+            downloadBtn.href = url;
+        } 
+        // Facebook
+        else if (url.includes('facebook.com') || url.includes('fb.com')) {
+            platform = 'facebook';
+            title = 'Facebook Video';
+            thumbnail = 'https://static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg';
+            downloadBtn.href = url;
+        } 
+        // Other platforms
+        else {
+            platform = new URL(url).hostname.replace('www.', '');
+            title = `Video from ${platform}`;
+            downloadBtn.href = url;
         }
-    });
-
-    // Extract video information
-    async function extractVideo(url) {
-        const response = await fetch(`${API_BASE_URL}/extract`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ url }),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Failed to extract video');
-        }
-
-        return await response.json();
+        
+        return {
+            title: title,
+            platform: platform,
+            thumbnail: thumbnail,
+            duration: duration,
+            originalUrl: url
+        };
     }
 
     // Update video info in the UI
@@ -106,6 +142,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             videoDuration.classList.add('hidden');
         }
+        
+        // Update download button to point to original URL
+        downloadBtn.href = info.originalUrl;
     }
 
     // Format duration from seconds to mm:ss

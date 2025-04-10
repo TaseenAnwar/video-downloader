@@ -11,7 +11,7 @@
     <div class="container">
         <header>
             <h1>Video Downloader</h1>
-            <p>Download videos from YouTube, TikTok, Twitter/X, Facebook, and more!</p>
+            <p>Paste a video URL to get download links from YouTube, TikTok, Twitter/X, Facebook, and more!</p>
         </header>
 
         <main>
@@ -29,6 +29,10 @@
                     </button>
                 </div>
             </form>
+
+            <div id="notice" class="notice">
+                <p><strong>Note:</strong> This is a frontend demo. For full functionality including video downloads, please deploy the backend on Render.com. <br>See the <a href="https://github.com/taseenanwar/video-downloader" target="_blank">GitHub repository</a> for instructions.</p>
+            </div>
 
             <div id="status" class="hidden">
                 <div class="loader">
@@ -49,10 +53,10 @@
                     </div>
                 </div>
                 <div class="download-options">
-                    <button id="download-btn" class="primary-btn">
-                        <span class="btn-text">Download MP4</span>
-                        <span class="btn-icon"><i class="fas fa-download"></i></span>
-                    </button>
+                    <a id="download-btn" class="primary-btn" href="#" target="_blank">
+                        <span class="btn-text">Watch Video</span>
+                        <span class="btn-icon"><i class="fas fa-external-link-alt"></i></span>
+                    </a>
                 </div>
             </div>
 

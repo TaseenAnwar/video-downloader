@@ -9,6 +9,8 @@
     --gray: #6c757d;
     --error-color: #dc3545;
     --success-color: #28a745;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
     --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --border-radius: 8px;
     --transition: all 0.3s ease;
@@ -50,7 +52,7 @@ header p {
 
 /* Form */
 #download-form {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .input-group {
@@ -87,6 +89,29 @@ button:hover {
 
 .btn-text {
     margin-right: 0.5rem;
+}
+
+/* Notice */
+.notice {
+    background-color: var(--light-gray);
+    border-left: 4px solid var(--info-color);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: var(--border-radius);
+}
+
+.notice p {
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.notice a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.notice a:hover {
+    text-decoration: underline;
 }
 
 /* Status */
@@ -162,6 +187,17 @@ button:hover {
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
     border-radius: var(--border-radius);
+    background-color: var(--primary-color);
+    color: var(--white);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.primary-btn:hover {
+    background-color: var(--secondary-color);
 }
 
 /* Error */
